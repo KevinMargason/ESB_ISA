@@ -24,7 +24,6 @@
                         <label for="role">Role</label>
                         <select id="role" name="role" required>
                             <option value="">Pilih role</option>
-                            <option value="admin" @selected(old('role') === 'admin')>admin</option>
                             <option value="supplier" @selected(old('role') === 'supplier')>supplier</option>
                             <option value="kurir" @selected(old('role') === 'kurir')>kurir</option>
                         </select>

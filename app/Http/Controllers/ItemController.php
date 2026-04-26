@@ -7,9 +7,9 @@ use App\Models\TrackingEvent;
 use App\Models\User;
 use App\Services\AuditTrailService;
 use App\Services\HashChainService;
+use App\Services\HybridCryptoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -44,7 +44,8 @@ class ItemController extends Controller
     public function store(
         Request $request,
         HashChainService $hashChainService,
-        AuditTrailService $auditTrailService
+        AuditTrailService $auditTrailService,
+        HybridCryptoService $hybridCryptoService
     ): RedirectResponse {
         $user = $request->user();
 
@@ -82,7 +83,7 @@ class ItemController extends Controller
             'supplier_id' => $supplierId,
             'current_status' => Item::STATUS_WAREHOUSE,
             'sensitive_notes' => $validated['sensitive_notes']
-                ? Crypt::encryptString($validated['sensitive_notes'])
+                ? $hybridCryptoService->encryptSensitive($validated['sensitive_notes'])
                 : null,
         ]);
 
@@ -111,8 +112,12 @@ class ItemController extends Controller
         return redirect()->route('items.show', $item)->with('success', 'Item berhasil dibuat.');
     }
 
-    public function show(Request $request, Item $item, AuditTrailService $auditTrailService): View
-    {
+    public function show(
+        Request $request,
+        Item $item,
+        AuditTrailService $auditTrailService,
+        HybridCryptoService $hybridCryptoService
+    ): View {
         $user = $request->user();
 
         if ($user->role === 'supplier' && $item->supplier_id !== $user->id) {
@@ -132,7 +137,7 @@ class ItemController extends Controller
         $decryptedNotes = null;
         if ($item->sensitive_notes) {
             try {
-                $decryptedNotes = Crypt::decryptString($item->sensitive_notes);
+                $decryptedNotes = $hybridCryptoService->decryptSensitive($item->sensitive_notes);
             } catch (\Throwable) {
                 $decryptedNotes = '[Gagal decrypt catatan]';
             }

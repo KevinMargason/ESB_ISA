@@ -32,12 +32,15 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/items', [ItemController::class, 'index'])->name('items.index');
+
     Route::get('/items/create', [ItemController::class, 'create'])
         ->middleware('role:admin,supplier')
         ->name('items.create');
+
     Route::post('/items', [ItemController::class, 'store'])
         ->middleware('role:admin,supplier')
         ->name('items.store');
+        
     Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
 
     Route::post('/items/{item}/status', [TrackingController::class, 'store'])
