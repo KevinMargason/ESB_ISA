@@ -68,7 +68,7 @@ class AuthController extends Controller
         $auditTrailService->record(
             $request,
             'LOGIN_SUCCESS',
-            'user',
+            'auth',
             (int) Auth::id(),
             [
                 'email' => $credentials['email'],
@@ -122,7 +122,7 @@ class AuthController extends Controller
         $auditTrailService->record(
             $request,
             'REGISTER_SUCCESS',
-            'user',
+            'auth',
             $user->id,
             [
                 'email' => $user->email,
@@ -141,7 +141,7 @@ class AuthController extends Controller
             $auditTrailService->record(
                 $request,
                 'LOGOUT',
-                'user',
+                'auth',
                 $user->id,
                 [
                     'email' => $user->email,

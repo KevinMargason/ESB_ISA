@@ -1,6 +1,6 @@
 # AUDIT REPORT: SECURE SUPPLY CHAIN TRACKING SYSTEM
 
-**Generated**: 16 April 2026
+**Generated**: 26 April 2026
 
 ---
 
@@ -8,7 +8,7 @@
 
 Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasikan mayoritas fitur wajib dengan tingkat kematangan yang baik. Namun, terdapat beberapa komponen yang masih memerlukan finalisasi untuk mencapai kelengkapan 100% terhadap requirement.
 
-### Status Keseluruhan: **78% Lengkap**
+### Status Keseluruhan: **88% Lengkap**
 
 ---
 
@@ -72,23 +72,19 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
         - ItemController::show() - Check `supplier_id` sebelum display
 - **Audit Logging**: Setiap akses denied dicatat di AuditTrail
 
-#### 4. **Output File (PDF/Extension Tertentu) (0-5 pt)** ❌ NOT IMPLEMENTED
+#### 4. **Output File (PDF/Extension Tertentu) (0-5 pt)** ✅ IMPLEMENTED
 
-- **Status**: 0/5
+- **Status**: 5/5
 - **Requirement**: Mencetak output dalam bentuk PDF atau file extension tertentu
 - **Temuan**:
-    - Routes untuk view audit trail dan integrity results ada, namun TIDAK ada export ke PDF
-    - Dokumentasi mention PDF export di:
-        - `laporan-secure-supply-chain.md` line 37, 52, 297-299
-        - Namun tidak ada controller action untuk generate PDF
-- **Missing Components**:
-    - No PDF library installed (dpf, barryvdh/laravel-dompdf, etc.)
-    - No export routes defined
-    - No PDF generation logic
-- **Action Required**: ⚠️ **CRITICAL** - Implement PDF export untuk:
-    1. Tracking report per item
-    2. Audit trail summary
-    3. Integrity verification result
+    - Library PDF sudah terpasang: `barryvdh/laravel-dompdf` (composer)
+    - Route export PDF audit trail sudah tersedia: `GET /audit-trails/export-pdf`
+    - Controller action sudah tersedia: `AuditTrailController::exportPdf()`
+    - Blade PDF sudah tersedia: `resources/views/pdf/audit-trail-report.blade.php`
+    - Export mengikuti filter aktif (`action`, `target_type`, `user_id`, `date_from`, `date_to`)
+- **Catatan**:
+    - Export PDF saat ini sudah mencakup **audit trail**.
+    - Export PDF untuk tracking item dan integrity report dapat menjadi pengembangan lanjutan.
 
 ---
 
@@ -108,28 +104,23 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
 - **Key Management**: Managed by Laravel dari APP_KEY di `.env`
 - **Security Level**: ⭐⭐⭐⭐⭐ (Production grade)
 
-#### ❓ CIPHER #2: SHA-256 HASHING (Partial Qualification)
+#### ✅ CIPHER #2: RSA-OAEP (Hybrid Encryption)
 
-- **Status**: Used but NOT encryption (hashing only) (5/25)
-- **Location**: `app/Services/HashChainService.php`
+- **Status**: Implemented
+- **Location**: `app/Services/HybridCryptoService.php`
 - **Implementation**:
-    ```php
-    $payloadHash = hash('sha256', json_encode($payload, ...));
-    $currentHash = hash('sha256', $raw);
-    ```
-- **Purpose**: Data integrity verification, NOT encryption
-- **Issue**: Requirement minimal 2 cipher untuk encryption/decryption, SHA-256 adalah hash function (one-way)
-- **Implication**: Hanya 1 cipher yang qualified (AES-256-GCM)
+    - Payload dienkripsi dengan AES-256-GCM
+    - DEK (Data Encryption Key) dibungkus dengan RSA public key (`openssl_public_encrypt`)
+    - Saat decrypt, DEK dibuka dengan RSA private key (`openssl_private_decrypt`)
+- **Key Management**: Path key dikonfigurasi di `config/security.php`
+- **Evidence penggunaan**:
+    - `ItemController::store()` menggunakan `HybridCryptoService::encryptSensitive()`
+    - `ItemController::show()` menggunakan `HybridCryptoService::decryptSensitive()`
+    - Unit/feature test tersedia untuk validasi alur hybrid
 
-#### ⚠️ **MISSING**: Second Encryption Cipher
+#### Catatan SHA-256
 
-- **Requirement**: Minimal 2 cipher untuk encryption yang bisa decrypt
-- **Current Status**: Hanya 1 cipher (AES-256-GCM)
-- **Options to Implement**:
-    1. **RSA Encryption** untuk sensitive data (Public-key crypto)
-    2. **ChaCha20-Poly1305** sebagai alternative AEAD cipher
-    3. **Blowfish/Twofish** untuk additional layer
-    4. **Base64 encoding** (non-cryptographic, but combined with XOR atau simple cipher)
+- SHA-256 tetap digunakan untuk hash chain integrity dan **bukan** cipher enkripsi.
 
 ---
 
@@ -193,17 +184,19 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
 
 ### E. SECURITY TESTING (0-10 pt)
 
-#### ❌ NOT IMPLEMENTED (0/10)
+#### ⚠️ PARTIALLY IMPLEMENTED (6/10)
 
 - **Requirement**: Simulasi attack terhadap cryptography atau security design
-- **Missing Components**:
-    1. **SQL Injection Testing** - Test validation & parameterized queries
-    2. **Tampering Attack** - Simulate transaction log modification
-    3. **Encryption Attack** - Try to decrypt without key
-    4. **Access Control Attack** - Supplier accessing other supplier's items
-    5. **Session Hijacking** - Test session management
-    6. **Brute Force** - Rate limiting testing
-    7. **Audit Trail Verification** - Verify logging completeness
+- **Implemented tests**:
+    1. **Brute Force / Rate Limiting** - `tests/Feature/BruteForceLoginTest.php`
+    2. **Role Tampering** - `tests/Feature/RegisterSecurityTest.php`
+    3. **Audit Trail Verification** - `tests/Feature/AuditTrailFeatureTest.php`
+    4. **Hybrid Encryption Flow** - `tests/Feature/HybridItemEncryptionFeatureTest.php`
+    5. **Hybrid Service Unit Test** - `tests/Unit/HybridCryptoServiceTest.php`
+- **Still missing**:
+    1. SQL injection simulation scenarios
+    2. Tampering simulation pada transaction log
+    3. Dokumentasi formal hasil attack simulation
 
 #### **ACTION REQUIRED**:
 
@@ -254,11 +247,11 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
 
 ### ⚠️ Areas for Improvement
 
-1. **Test Coverage**: No unit/feature tests visible
+1. **Test Coverage**: Test sudah ada, namun cakupan skenario security lanjutan masih bisa ditambah
 2. **Error Logging**: Limited error logging in services
 3. **Transaction Management**: No DB transactions untuk atomic operations
 4. **Input Sanitization**: Relies on validation, no explicit sanitization
-5. **Rate Limiting**: No rate limiting on API endpoints
+5. **Rate Limiting**: Sudah ada pada login, namun belum menyeluruh pada endpoint lain
 
 ---
 
@@ -266,23 +259,23 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
 
 ### HIGH PRIORITY (Must Complete)
 
-- [ ] **PDF Export Module**
-    - [ ] Install PDF library (barryvdh/laravel-dompdf recommended)
-    - [ ] Create PDF generation service
+- [x] **PDF Export Module**
+    - [x] Install PDF library (barryvdh/laravel-dompdf)
+    - [x] Create PDF generation logic (audit trail)
     - [ ] Add export routes for:
         - [ ] Item tracking report
-        - [ ] Audit trail export
+        - [x] Audit trail export
         - [ ] Integrity verification report
-- [ ] **Second Encryption Cipher**
-    - [ ] Implement RSA or ChaCha20-Poly1305
-    - [ ] Create hybrid encryption service
-    - [ ] Update data models untuk store encrypted keys
+- [x] **Second Encryption Cipher**
+    - [x] Implement RSA-based hybrid encryption
+    - [x] Create hybrid encryption service
+    - [x] Integrate into sensitive notes flow
 
 ### MEDIUM PRIORITY (Recommended)
 
 - [ ] **Security Testing Suite**
-    - [ ] Create unit tests untuk encryption/decryption
-    - [ ] Create security test scenarios
+    - [x] Create unit tests untuk encryption/decryption
+    - [x] Create security test scenarios (partial)
     - [ ] Document attack simulation results
 - [ ] **Enhanced Audit Logging**
     - [ ] Add timestamp precision
@@ -307,36 +300,34 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
 
 ## IV. SCORING BREAKDOWN
 
-| Category            | Requirement          | Max Pts | Actual | %       | Status |
-| ------------------- | -------------------- | ------- | ------ | ------- | ------ |
-| Basic Features      | Database MySQL       | 10      | 10     | 100%    | ✅     |
-|                     | Register/Login       | 10      | 10     | 100%    | ✅     |
-|                     | Role-based Access    | 5       | 5      | 100%    | ✅     |
-|                     | PDF Output           | 5       | 0      | 0%      | ❌     |
-| **Subtotal**        |                      | **30**  | **25** | **83%** |        |
-| Encryption          | AES-256-GCM          | 25      | 10     | 40%     | ⚠️     |
-| Security Design     | BPMN & Docs          | 20      | 12     | 60%     | ⚠️     |
-| Formal Report       | Documentation        | 5       | 2      | 40%     | ⚠️     |
-| Security Testing    | Testing & Attack Sim | 10      | 0      | 0%      | ❌     |
-| Additional Features | Advanced Security    | 10      | 6      | 60%     | ⚠️     |
-| **TOTAL**           |                      | **75**  | **55** | **73%** |        |
+| Category            | Requirement          | Max Pts | Actual | %        | Status |
+| ------------------- | -------------------- | ------- | ------ | -------- | ------ |
+| Basic Features      | Database MySQL       | 10      | 10     | 100%     | ✅     |
+|                     | Register/Login       | 10      | 10     | 100%     | ✅     |
+|                     | Role-based Access    | 5       | 5      | 100%     | ✅     |
+|                     | PDF Output           | 5       | 5      | 100%     | ✅     |
+| **Subtotal**        |                      | **30**  | **30** | **100%** |        |
+| Encryption          | AES-256-GCM          | 25      | 10     | 40%      | ⚠️     |
+| Security Design     | BPMN & Docs          | 20      | 12     | 60%      | ⚠️     |
+| Formal Report       | Documentation        | 5       | 2      | 40%      | ⚠️     |
+| Security Testing    | Testing & Attack Sim | 10      | 6      | 60%      | ⚠️     |
+| Additional Features | Advanced Security    | 10      | 6      | 60%      | ⚠️     |
+| **TOTAL**           |                      | **75**  | **66** | **88%**  |        |
 
 ---
 
 ## V. RECOMMENDATIONS
 
-### Phase 1: Critical Fixes (Target: +15 pts)
+### Phase 1: Critical Fixes (Target: +9 pts)
 
-1. **Implement PDF Export** (+5 pts)
-    - Use barryvdh/laravel-dompdf
-    - Create 3 export types (tracking, audit, integrity)
-    - Time estimate: 4-6 hours
+1. **Extend PDF Export Coverage** (+3 pts)
+    - Tambah export PDF untuk tracking item dan integrity
+    - Time estimate: 2-4 hours
 
-2. **Add Second Cipher** (+10-15 pts)
-    - Implement RSA encryption untuk item_code
-    - Create hybrid encryption service
-    - Test encrypt/decrypt flows
-    - Time estimate: 6-8 hours
+2. **Harden Hybrid Key Management** (+3-6 pts)
+    - Automated key generation and rotation workflow
+    - Separate local/staging/production key policy
+    - Time estimate: 2-4 hours
 
 ### Phase 2: Comprehensive Testing (+10 pts)
 
@@ -370,7 +361,7 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
 - [ ] Verify all 3 user roles can login
 - [ ] Test item creation flow
 - [ ] Test tracking status update (warehouse → distribution → customer)
-- [ ] Test PDF export (once implemented)
+- [x] Test PDF export (audit trail)
 - [ ] Verify audit trail logging
 - [ ] Verify hash chain integrity
 - [ ] Test role-based access restrictions
@@ -383,9 +374,9 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
 - [x] Controllers: OK
 - [x] Services: OK
 - [x] Routes: OK
-- [ ] Tests: MISSING
-- [ ] PDF Export: MISSING
-- [ ] Encryption Service: INCOMPLETE (need 2nd cipher)
+- [x] Tests: AVAILABLE (feature + unit)
+- [x] PDF Export: AVAILABLE (audit trail)
+- [x] Encryption Service: AVAILABLE (hybrid RSA + AES)
 
 ---
 
@@ -395,8 +386,8 @@ Project **Secure Supply Chain Tracking System (S2CTS)** telah mengimplementasika
     - Review laporan ini dengan team
     - Assign tasks untuk missing components
 2. **Sprint 1 (2-3 days)**:
-    - Implement PDF export
-    - Add second encryption cipher
+    - Extend PDF export ke item tracking + integrity
+    - Tambah dokumentasi key management hybrid crypto
     - Complete formal report
 3. **Sprint 2 (2-3 days)**:
     - Security testing suite

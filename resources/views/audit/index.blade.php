@@ -54,6 +54,7 @@
                 <div class="col-4" style="display:flex; align-items:end; gap:8px;">
                     <button class="btn" type="submit">Terapkan Filter</button>
                     <a class="btn secondary" href="{{ route('audit.index') }}">Reset</a>
+                    <a class="btn secondary" href="{{ route('audit.export-pdf', request()->query()) }}">Export PDF</a>
                 </div>
             </div>
         </form>

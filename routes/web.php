@@ -54,4 +54,8 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/audit-trails', [AuditTrailController::class, 'index'])
         ->middleware('role:admin')
         ->name('audit.index');
+
+    Route::get('/audit-trails/export-pdf', [AuditTrailController::class, 'exportPdf'])
+        ->middleware('role:admin')
+        ->name('audit.export-pdf');
 });

@@ -20,7 +20,7 @@ class AuditTrailService
             'details' => $details,
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'created_at' => now(),
+            'created_at' => now('Asia/Jakarta'),
         ]);
     }
 }
