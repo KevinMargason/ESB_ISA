@@ -43,7 +43,7 @@ class RegisterSecurityTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('register.verify', ['email' => 'supplier-user@example.com']));
 
         $this->assertDatabaseHas('users', [
             'email' => 'supplier-user@example.com',
@@ -61,7 +61,7 @@ class RegisterSecurityTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('register.verify', ['email' => 'kurir-user@example.com']));
 
         $this->assertDatabaseHas('users', [
             'email' => 'kurir-user@example.com',
