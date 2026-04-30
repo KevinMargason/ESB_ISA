@@ -134,8 +134,10 @@ class ItemController extends Controller
 
         $item->load(['supplier', 'trackingEvents.actor']);
 
+        $canViewSensitive = $user->role === 'admin' || $user->id === $item->supplier_id;
         $decryptedNotes = null;
-        if ($item->sensitive_notes) {
+
+        if ($item->sensitive_notes && $canViewSensitive) {
             try {
                 $decryptedNotes = $hybridCryptoService->decryptSensitive($item->sensitive_notes);
             } catch (\Throwable) {
@@ -152,6 +154,17 @@ class ItemController extends Controller
                     'decrypt_success' => $decryptedNotes !== '[Gagal decrypt catatan]',
                 ]
             );
+        } elseif ($item->sensitive_notes && ! $canViewSensitive) {
+            $auditTrailService->record(
+                $request,
+                'SENSITIVE_NOTES_ACCESS_BLOCKED',
+                'item',
+                $item->id,
+                [
+                    'item_code' => $item->item_code,
+                    'viewer_role' => $user->role,
+                ]
+            );
         } else {
             $auditTrailService->record(
                 $request,
@@ -165,6 +178,7 @@ class ItemController extends Controller
         return view('items.show', [
             'item' => $item,
             'decryptedNotes' => $decryptedNotes,
+            'canViewSensitive' => $canViewSensitive,
             'statuses' => Item::statuses(),
             'canUpdateStatus' => in_array($user->role, ['admin', 'kurir'], true),
         ]);
