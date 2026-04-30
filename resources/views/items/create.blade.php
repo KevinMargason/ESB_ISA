@@ -21,8 +21,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="category">Kategori</label>
-                        <input id="category" name="category" value="{{ old('category') }}" required>
+                        <label for="category">Category</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select category</option>
+                            <option value="furniture" @selected(old('category') == 'furniture')>Furniture</option>
+                            <option value="electronics" @selected(old('category') == 'electronics')>Electronics</option>
+                            <option value="fashion" @selected(old('category') == 'fashion')>Fashion</option>
+                            <option value="medical" @selected(old('category') == 'medical')>Medical</option>
+                            <option value="other" @selected(old('category') == 'other')>Other</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
