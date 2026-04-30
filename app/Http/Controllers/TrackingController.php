@@ -46,7 +46,7 @@ class TrackingController extends Controller
             'actor_id' => $request->user()->id,
             'status' => $validated['status'],
             'notes' => $validated['notes'] ?? null,
-            'event_time' => now(),
+            'event_time' => now('Asia/Jakarta'),
         ]);
 
         $hashChainService->append('item', $item->id, $request->user()->id, 'STATUS_UPDATED', [
