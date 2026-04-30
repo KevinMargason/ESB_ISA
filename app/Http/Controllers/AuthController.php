@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Mail\RegisterOtpMail;
 use App\Services\AuditTrailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -64,6 +67,27 @@ class AuthController extends Controller
                 'email' => 'Email atau password tidak valid.',
             ])->onlyInput('email');
         }
+        $user = Auth::user();
+        if ($user && $user->otp_verified_at === null) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            $auditTrailService->record(
+                $request,
+                'LOGIN_BLOCKED_OTP',
+                'auth',
+                $user->id,
+                [
+                    'email' => $user->email,
+                ]
+            );
+
+            return redirect()
+                ->route('register.verify', ['email' => $user->email])
+                ->withErrors(['email' => 'Akun belum diverifikasi OTP. Silakan cek email.']);
+        }
+
         RateLimiter::clear($throttleKey);
         $auditTrailService->record(
             $request,
@@ -116,8 +140,15 @@ class AuthController extends Controller
             'password' => $validated['password'],
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        $otpCode = (string) random_int(100000, 999999);
+        $expiresAt = now()->addMinutes(5);
+        $user->forceFill([
+            'otp_code' => Hash::make($otpCode),
+            'otp_expires_at' => $expiresAt,
+            'otp_verified_at' => null,
+        ])->save();
+
+        Mail::to($user->email)->send(new RegisterOtpMail($user->name, $otpCode, 5));
 
         $auditTrailService->record(
             $request,
@@ -129,6 +160,79 @@ class AuthController extends Controller
                 'role' => $user->role,
             ]
         );
+
+        return redirect()->route('register.verify', ['email' => $user->email]);
+    }
+
+    public function showVerifyOtp(Request $request): View
+    {
+        return view('auth.verify-otp', [
+            'email' => (string) $request->query('email', ''),
+        ]);
+    }
+
+    public function verifyOtp(Request $request, AuditTrailService $auditTrailService): RedirectResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'otp' => ['required', 'digits:6'],
+        ]);
+
+        $user = User::query()->where('email', $validated['email'])->first();
+        if (! $user) {
+            return back()->withErrors(['email' => 'Email tidak ditemukan.']);
+        }
+
+        if ($user->otp_verified_at !== null) {
+            return redirect()->route('login')->withErrors(['email' => 'Akun sudah terverifikasi. Silakan login.']);
+        }
+
+        if ($user->otp_expires_at === null || $user->otp_expires_at->isPast()) {
+            $auditTrailService->record(
+                $request,
+                'OTP_EXPIRED',
+                'auth',
+                $user->id,
+                [
+                    'email' => $user->email,
+                ]
+            );
+
+            return back()->withErrors(['otp' => 'OTP sudah kedaluwarsa.']);
+        }
+
+        if (! is_string($user->otp_code) || ! Hash::check($validated['otp'], $user->otp_code)) {
+            $auditTrailService->record(
+                $request,
+                'OTP_INVALID',
+                'auth',
+                $user->id,
+                [
+                    'email' => $user->email,
+                ]
+            );
+
+            return back()->withErrors(['otp' => 'OTP tidak valid.']);
+        }
+
+        $user->forceFill([
+            'otp_verified_at' => now(),
+            'otp_code' => null,
+            'otp_expires_at' => null,
+        ])->save();
+
+        $auditTrailService->record(
+            $request,
+            'OTP_VERIFIED',
+            'auth',
+            $user->id,
+            [
+                'email' => $user->email,
+            ]
+        );
+
+        Auth::login($user);
+        $request->session()->regenerate();
 
         return redirect()->route('dashboard');
     }

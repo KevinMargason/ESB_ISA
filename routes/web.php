@@ -22,6 +22,9 @@ Route::middleware('guest')->group(function (): void {
 
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+
+    Route::get('/register/verify', [AuthController::class, 'showVerifyOtp'])->name('register.verify');
+    Route::post('/register/verify', [AuthController::class, 'verifyOtp'])->name('register.verify.store');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])
@@ -40,7 +43,7 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/items', [ItemController::class, 'store'])
         ->middleware('role:admin,supplier')
         ->name('items.store');
-        
+
     Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
 
     Route::post('/items/{item}/status', [TrackingController::class, 'store'])

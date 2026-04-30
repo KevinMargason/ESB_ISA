@@ -20,16 +20,7 @@
                     <tr><th>Jumlah</th><td>{{ $item->quantity }}</td></tr>
                     <tr><th>Supplier</th><td>{{ $item->supplier->name }}</td></tr>
                     <tr><th>Status Saat Ini</th><td><span class="badge">{{ $item->current_status }}</span></td></tr>
-                    <tr>
-                        <th>Catatan Sensitif (decrypted)</th>
-                        <td>
-                            @if($canViewSensitive)
-                                {{ $decryptedNotes ?? '-' }}
-                            @else
-                                <span class="muted">Tidak memiliki izin melihat.</span>
-                            @endif
-                        </td>
-                    </tr>
+                    <tr><th>Catatan Sensitif (decrypted)</th><td>{{ $decryptedNotes ?? '-' }}</td></tr>
                 </table>
             </div>
         </div>
