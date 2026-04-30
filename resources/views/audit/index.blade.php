@@ -1,11 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Audit Trail</h1>
-    <p class="muted">Riwayat aktivitas keamanan untuk admin, termasuk login, akses, tracking, dan integrity check.</p>
+    <div class="section-head">
+        <div class="section-copy">
+            <h1>Audit Trail</h1>
+            <p class="muted">Riwayat aktivitas keamanan untuk admin, termasuk login, akses, tracking, dan integrity check.</p>
+        </div>
+    </div>
 
-    <div class="card" style="margin-bottom: 14px;">
-        <h3 style="margin-bottom: 10px;">Filter</h3>
+    <div class="card hero-card" style="margin-bottom: 14px;">
+        <h3>Filter</h3>
         <form method="GET" action="{{ route('audit.index') }}">
             <div class="row">
                 <div class="col-4">
@@ -67,41 +71,43 @@
     </div>
 
     <div class="card">
-        <h3 style="margin-bottom: 10px;">Data Audit</h3>
-        <table>
-            <thead>
-            <tr>
-                <th>Waktu</th>
-                <th>User</th>
-                <th>Action</th>
-                <th>Target</th>
-                <th>IP</th>
-                <th>Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            @forelse($audits as $audit)
+        <h3>Data Audit</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
                 <tr>
-                    <td>{{ $audit->created_at->format('Y-m-d H:i:s') }}</td>
-                    <td>{{ $audit->user?->name ?? '-' }} @if($audit->user) ({{ $audit->user->role }}) @endif</td>
-                    <td><span class="badge">{{ $audit->action }}</span></td>
-                    <td>{{ $audit->target_type }}:{{ $audit->target_id ?? '-' }}</td>
-                    <td>{{ $audit->ip_address ?? '-' }}</td>
-                    <td>
-                        @if(is_array($audit->details) && count($audit->details) > 0)
-                            <pre style="margin:0; white-space:pre-wrap; font-size:12px;">{{ json_encode($audit->details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
-                        @else
-                            -
-                        @endif
-                    </td>
+                    <th>Waktu</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Target</th>
+                    <th>IP</th>
+                    <th>Details</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="muted">Belum ada data audit.</td>
-                </tr>
-            @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @forelse($audits as $audit)
+                    <tr>
+                        <td>{{ $audit->created_at->format('Y-m-d H:i:s') }}</td>
+                        <td>{{ $audit->user?->name ?? '-' }} @if($audit->user) ({{ $audit->user->role }}) @endif</td>
+                        <td><span class="badge">{{ $audit->action }}</span></td>
+                        <td>{{ $audit->target_type }}:{{ $audit->target_id ?? '-' }}</td>
+                        <td>{{ $audit->ip_address ?? '-' }}</td>
+                        <td>
+                            @if(is_array($audit->details) && count($audit->details) > 0)
+                                <pre class="mono" style="margin:0; white-space:pre-wrap;">{{ json_encode($audit->details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
+                            @else
+                                -
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="muted">Belum ada data audit.</td>
+                    </tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
 
         @if($audits->hasPages())
             <div class="stack" style="margin-top: 12px; justify-content: space-between;">

@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="row" style="justify-content: center;">
-        <div class="col-6">
-            <div class="card">
+    <div class="auth-shell">
+        <div class="auth-panel">
+            <div class="card hero-card subtle-card">
+                <span class="eyebrow">Secure Access</span>
                 <h1>Login</h1>
                 <p class="muted">Masuk untuk menggunakan Secure Supply Chain Tracking System.</p>
 
@@ -23,7 +24,7 @@
                     <a href="{{ route('register') }}" class="btn secondary">Register</a>
                 </form>
 
-                <hr style="margin:16px 0; border:0; border-top:1px solid #d7ddea;">
+                <hr>
                 <p class="muted" style="margin:0;">Demo seed account:</p>
                 <ul class="muted">
                     <li>admin@local.test / password123</li>

@@ -1,12 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Input Data Barang</h1>
-    <p class="muted">Role yang bisa input: admin dan supplier.</p>
+    <div class="section-head">
+        <div class="section-copy">
+            <h1>Input Data Barang</h1>
+            <p class="muted">Role yang bisa input: admin dan supplier.</p>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-8">
-            <div class="card">
+            <div class="card hero-card subtle-card">
                 <form action="{{ route('items.store') }}" method="POST">
                     @csrf
 
@@ -56,3 +60,4 @@
         </div>
     </div>
 @endsection
+

@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="row" style="justify-content: center;">
-        <div class="col-6">
-            <div class="card">
+    <div class="auth-shell">
+        <div class="auth-panel">
+            <div class="card hero-card subtle-card">
+                <span class="eyebrow">Create Account</span>
                 <h1>Register</h1>
                 <p class="muted">Untuk mode localhost pembagian role bisa langsung dipilih saat register.</p>
 
@@ -46,3 +47,4 @@
         </div>
     </div>
 @endsection
+
