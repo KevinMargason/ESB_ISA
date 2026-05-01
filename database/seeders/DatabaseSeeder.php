@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Admin Local',
                 'role' => 'admin',
                 'password' => 'password123',
+                'otp_code' => null,
+                'otp_expires_at' => null,
+                'otp_verified_at' => now(),
             ]
         );
 
@@ -30,6 +33,9 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Supplier Local',
                 'role' => 'supplier',
                 'password' => 'password123',
+                'otp_code' => null,
+                'otp_expires_at' => null,
+                'otp_verified_at' => now(),
             ]
         );
 
@@ -39,6 +45,9 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Kurir Local',
                 'role' => 'kurir',
                 'password' => 'password123',
+                'otp_code' => null,
+                'otp_expires_at' => null,
+                'otp_verified_at' => now(),
             ]
         );
     }
