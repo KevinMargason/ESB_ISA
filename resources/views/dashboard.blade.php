@@ -30,19 +30,7 @@
 
         <div class="col-12">
             <div class="card">
-                <div class="section-head">
-                    <h3>Aksi Cepat</h3>
-                    <div class="stack" style="gap: 8px;">
-                        <a class="btn secondary" href="{{ route('items.index') }}">Lihat Item</a>
-                        @if(in_array($user->role, ['admin', 'supplier'], true))
-                            <a class="btn" href="{{ route('items.create') }}">Input Item Baru</a>
-                        @endif
-                        @if($user->role === 'admin')
-                            <a class="btn" href="{{ route('integrity.index') }}">Jalankan Integrity Check</a>
-                            <a class="btn secondary" href="{{ route('audit.index') }}">Lihat Audit Trail</a>
-                        @endif
-                    </div>
-                </div>
+                <h3>Item Terbaru</h3>
 
                 <div class="table-wrap">
                     <table>
@@ -76,4 +64,3 @@
         </div>
     </div>
 @endsection
-

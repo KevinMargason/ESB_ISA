@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="section-head" style="justify-content:center; text-align:center;">
-        <div class="section-copy" style="margin:auto;">
+    <div class="section-head">
+        <div class="section-copy">
             <h1>Input Data Barang</h1>
             <p class="muted">Role yang bisa input: admin dan supplier.</p>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
             <div class="card hero-card subtle-card">
-                <form action="{{ route('items.store') }}" method="POST">
+                <form action="{{ route('items.store') }}" method="POST" class="form-grid">
                     @csrf
 
                     <div class="form-group">
@@ -55,12 +55,12 @@
                         </div>
                     @endif
 
-                    <div class="form-group">
+                    <div class="form-group form-span-2">
                         <label for="sensitive_notes">Catatan Sensitif (opsional, akan dienkripsi)</label>
                         <textarea id="sensitive_notes" name="sensitive_notes" rows="4">{{ old('sensitive_notes') }}</textarea>
                     </div>
 
-                    <div style="display:flex; justify-content:space-between; margin-top:14px;">
+                    <div class="form-actions form-span-2">
                         <a class="btn secondary" href="{{ route('items.index') }}">Kembali</a>
                         <button class="btn" type="submit">Simpan Item</button>
                     </div>

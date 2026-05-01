@@ -12,10 +12,13 @@
 
 <body>
     @auth
-        <div class="topbar">
-            <div class="container stack" style="justify-content: space-between;">
-                <div class="stack">
-                    <span class="brand">ESB</span>
+        <div class="app-shell">
+            <aside class="sidebar">
+                <div class="sidebar-brand">
+                    <img class="brand" src="{{ asset('assets/logo.png') }}" alt="ESB Logo">
+                </div>
+
+                <nav class="sidebar-nav">
                     <a class="nav-pill {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                         href="{{ route('dashboard') }}">Dashboard</a>
                     <a class="nav-pill {{ request()->routeIs('items.*') ? 'active' : '' }}"
@@ -26,37 +29,44 @@
                         <a class="nav-pill {{ request()->routeIs('audit.*') ? 'active' : '' }}"
                             href="{{ route('audit.index') }}">Audit Trail</a>
                     @endif
-                </div>
-                <div class="stack">
+                </nav>
+
+                <div class="sidebar-user">
                     <span class="user-chip">Login sebagai <strong>{{ auth()->user()->name }}</strong>
                         ({{ auth()->user()->role }})</span>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="btn danger">Logout</button>
                     </form>
+                </div>                
+            </aside>
+
+            <main class="main-content">
+                <div class="container">
+                    @if(session('success'))
+                        <div class="alert success">{{ session('success') }}</div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="alert error">
+                            <strong>Terjadi error:</strong>
+                            <ul>
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @yield('content')
                 </div>
-            </div>
+            </main>
         </div>
+    @else
+        <main class="container">
+            @yield('content')
+        </main>
     @endauth
-
-    <main class="container">
-        @if(session('success'))
-            <div class="alert success">{{ session('success') }}</div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert error">
-                <strong>Terjadi error:</strong>
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @yield('content')
-    </main>
 </body>
 
 </html>
