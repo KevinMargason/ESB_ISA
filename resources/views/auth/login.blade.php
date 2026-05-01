@@ -19,9 +19,11 @@
                         <label for="password">Password</label>
                         <input id="password" name="password" type="password" required>
                     </div>
-
-                    <button type="submit" class="btn">Login</button>
-                    <a href="{{ route('register') }}" class="btn secondary">Register</a>
+                    
+                    <div style="display:flex; gap:12px; margin-top:10px;">
+                        <button type="submit" class="btn" style="flex:1; height:42px;">Login</button>
+                        <a href="{{ route('register') }}" class="btn secondary" style="flex:1; height:42px; display:flex; align-items:center; justify-content:center;">Register</a>
+                    </div>
                 </form>
 
                 <hr>

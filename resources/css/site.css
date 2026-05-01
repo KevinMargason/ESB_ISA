@@ -130,7 +130,7 @@
         }
 
         .col-8 {
-            grid-column: span 8;
+            grid-column: 3 / span 8;
         }
 
         .col-12 {
@@ -241,21 +241,29 @@
             font-weight: 600;
             font-size: 13px;
             letter-spacing: 0.01em;
-            background: var(--accent);
-            color: #fff;
+            background: var(--accent-soft);
+            color: var(--accent);
             transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
         }
 
         .btn:hover {
             transform: translateY(-1px);
-            background: #0f4052;
+            background: var(--accent);
+            color: #e4f2f3;
+            box-shadow: 0 8px 24px rgba(22, 78, 99, 0.16);
         }
 
         .btn.secondary {
             background: var(--accent-soft);
             color: var(--accent);
             box-shadow: none;
-            border: 1px solid #c5dde1;
+        }
+
+        .btn.secondary:hover {
+            transform: translateY(-1px);
+            background: var(--accent);
+            color: #e4f2f3;
+            box-shadow: 0 8px 24px rgba(22, 78, 99, 0.16);
         }
 
         .btn.danger {

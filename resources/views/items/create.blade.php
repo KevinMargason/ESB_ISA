@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="section-head">
-        <div class="section-copy">
+    <div class="section-head" style="justify-content:center; text-align:center;">
+        <div class="section-copy" style="margin:auto;">
             <h1>Input Data Barang</h1>
             <p class="muted">Role yang bisa input: admin dan supplier.</p>
         </div>
@@ -60,11 +60,12 @@
                         <textarea id="sensitive_notes" name="sensitive_notes" rows="4">{{ old('sensitive_notes') }}</textarea>
                     </div>
 
-                    <button class="btn" type="submit">Simpan Item</button>
-                    <a class="btn secondary" href="{{ route('items.index') }}">Kembali</a>
+                    <div style="display:flex; justify-content:space-between; margin-top:14px;">
+                        <a class="btn secondary" href="{{ route('items.index') }}">Kembali</a>
+                        <button class="btn" type="submit">Simpan Item</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 @endsection
-

@@ -32,7 +32,7 @@
             <div class="card">
                 <div class="section-head">
                     <h3>Aksi Cepat</h3>
-                    <div class="stack">
+                    <div class="stack" style="gap: 8px;">
                         <a class="btn secondary" href="{{ route('items.index') }}">Lihat Item</a>
                         @if(in_array($user->role, ['admin', 'supplier'], true))
                             <a class="btn" href="{{ route('items.create') }}">Input Item Baru</a>
