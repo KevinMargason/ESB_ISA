@@ -4,7 +4,7 @@
     <div class="section-head">
         <div class="section-copy">
             <h1>Dashboard Operasional</h1>
-            <p class="muted">Ringkasan aktivitas utama Secure Supply Chain Tracking System di lingkungan localhost.</p>
+            <p class="muted">Ringkasan aktivitas Secure Supply Chain Tracking System</p>
         </div>
     </div>
 

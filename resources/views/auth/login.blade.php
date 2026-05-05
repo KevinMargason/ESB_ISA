@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+  
+
     <div class="auth-shell">
+         
         <div class="auth-panel">
             <div class="card hero-card subtle-card">
-                <span class="eyebrow">Secure Access</span>
+                <img src="{{ asset('assets/logo.png') }}" class="brand" alt="ESB Logo">
                 <h1>Login</h1>
-                <p class="muted">Masuk untuk menggunakan Secure Supply Chain Tracking System.</p>
-
                 <form action="{{ route('login.store') }}" method="POST">
                     @csrf
                     <div class="form-group">

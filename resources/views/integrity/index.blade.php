@@ -4,7 +4,7 @@
     <div class="section-head">
         <div class="section-copy">
             <h1>Integrity Verification</h1>
-            <p class="muted">Halaman ini untuk admin mengecek apakah hash chain transaction log masih valid.</p>
+            <p class="muted">Verifikasi validitas rantai hash pada log transaksi</p>
         </div>
     </div>
 

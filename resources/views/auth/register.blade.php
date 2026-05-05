@@ -4,9 +4,8 @@
     <div class="auth-shell">
         <div class="auth-panel">
             <div class="card hero-card subtle-card">
-                <span class="eyebrow">Create Account</span>
+                <img src="{{ asset('assets/logo.png') }}" class="brand"  alt="ESB Logo">
                 <h1>Register</h1>
-                <p class="muted">Untuk mode localhost pembagian role bisa langsung dipilih saat register.</p>
 
                 <form action="{{ route('register.store') }}" method="POST">
                     @csrf

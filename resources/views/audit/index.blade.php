@@ -4,7 +4,7 @@
     <div class="section-head">
         <div class="section-copy">
             <h1>Audit Trail</h1>
-            <p class="muted">Riwayat aktivitas keamanan untuk admin, termasuk login, akses, tracking, dan integrity check.</p>
+            <p class="muted">Audit akses pengguna, autentikasi, dan perubahan status sistem</p>
         </div>
     </div>
 
@@ -13,11 +13,19 @@
         <form method="GET" action="{{ route('audit.index') }}">
             <div class="row">
                 <div class="col-4">
-                    <div class="form-group">
-                        <label for="action">Action</label>
-                        <input id="action" name="action" value="{{ $filters['action'] }}" placeholder="contoh: LOGIN or SENSITIVE">
-                    </div>
-                </div>
+    <div class="form-group">
+        <label for="action">Action</label>
+        <select id="action" name="action">
+            <option value="">Semua Action</option>
+            @foreach($actions as $action)
+                <option value="{{ $action }}" @selected($filters['action'] === $action)>
+                    {{ $action }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
                 <div class="col-4">
                     <div class="form-group">
                         <label for="target_type">Target Type</label>

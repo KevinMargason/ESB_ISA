@@ -4,7 +4,7 @@
     <div class="section-head">
         <div class="section-copy">
             <h1>Data Item</h1>
-            <p class="muted" style="margin: 0;">Tracking status: WAREHOUSE -> DISTRIBUTION -> CUSTOMER_RECEIVED</p>
+            <p class="muted" style="margin: 0;">Tracking status barang Anda</p>
         </div>
         @if(in_array($user->role, ['admin', 'supplier'], true))
             <a class="btn" href="{{ route('items.create') }}">Input Item</a>
@@ -19,7 +19,7 @@
                     <th>Kode</th>
                     <th>Nama</th>
                     <th>Kategori</th>
-                    <th>Qty</th>
+                    <th>Quantity</th>
                     <th>Supplier</th>
                     <th>Status</th>
                     <th>Aksi</th>
